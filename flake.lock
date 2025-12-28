@@ -25,12 +25,16 @@
     "strudel": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-BAO6nHRyY3YDH22IlftPCzFOvHnbW214z/+qX6gTczE=",
-        "type": "file",
+        "lastModified": 1766266070,
+        "narHash": "sha256-sPvoVCYPG2y21i0qUjl7X6A0bRnOGQ4QuoHpCTd2TF8=",
+        "ref": "refs/heads/main",
+        "rev": "5a51b4ec71b0e56ed2b25566fb7b01225ca28e88",
+        "revCount": 5833,
+        "type": "git",
         "url": "https://codeberg.org/uzu/strudel"
       },
       "original": {
-        "type": "file",
+        "type": "git",
         "url": "https://codeberg.org/uzu/strudel"
       }
     }
