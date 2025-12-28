@@ -18,6 +18,13 @@
   let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+
+    strudel_pnpm_deps = pkgs.fetchPnpmDeps {
+      pname = "strudel_pnpm_deps";
+      src = strudel;
+      fetcherVersion = 3;
+      hash = "sha256-v/2txWPJNAAv+cU4E5TnaRwFdoUBaQLMu88FuRlNxO8=";
+    };
   in
   {
     devShells.${system}.default = pkgs.mkShell {
