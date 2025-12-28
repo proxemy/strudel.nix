@@ -27,6 +27,21 @@
     };
   in
   {
+    packages.${system}.default = pkgs.stdenv.mkDerivation {
+      name = "strudel.nix";
+      src = strudel;
+        nativeBuildInputs = with pkgs; [
+          nodejs # in case scripts are run outside of a pnpm call
+          pnpmConfigHook
+          pnpm # At least required by pnpmConfigHook, if not other (custom) phases
+        ];
+      pnpmDeps = strudel_pnpm_deps;
+      buildPhase = ''
+        mkdir $out # TODO
+      '';
+    };
+
+
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
         nodejs-slim
