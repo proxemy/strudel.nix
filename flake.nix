@@ -30,17 +30,17 @@
     packages.${system}.default = pkgs.stdenv.mkDerivation {
       name = "strudel.nix";
       src = strudel;
-        nativeBuildInputs = with pkgs; [
-          nodejs # in case scripts are run outside of a pnpm call
-          pnpmConfigHook
-          pnpm # At least required by pnpmConfigHook, if not other (custom) phases
-        ];
+      nativeBuildInputs = with pkgs; [
+        nodejs
+        pnpmConfigHook
+        pnpm
+      ];
       pnpmDeps = strudel_pnpm_deps;
-      buildPhase = ''
-        mkdir $out # TODO
-      '';
+      buildPhase = "pnpm run build";
+      # Maybe not the entire repository needs to copied over
+      # but this is how the project is structured atm.
+      installPhase = "mkdir $out; cp --recursive * $out";
     };
-
 
     devShells.${system}.default = pkgs.mkShell {
       packages = with pkgs; [
