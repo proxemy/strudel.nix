@@ -51,5 +51,7 @@
         pnpm --version
       '';
     };
+
+    formatter.${system} = pkgs.nixfmt-rfc-style;
   };
 }
