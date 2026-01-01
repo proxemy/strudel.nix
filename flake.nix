@@ -31,7 +31,7 @@
         hash = "sha256-v/2txWPJNAAv+cU4E5TnaRwFdoUBaQLMu88FuRlNxO8=";
       };
 
-      project_deps = with pkgs; [
+      node_deps = with pkgs; [
         nodejs
         pnpmConfigHook
         pnpm
@@ -41,16 +41,18 @@
       packages.${system}.default = pkgs.stdenv.mkDerivation {
         name = "strudel.nix";
         src = strudel;
-        nativeBuildInputs = project_deps;
+        nativeBuildInputs = node_deps;
         pnpmDeps = pnpm_deps;
         buildPhase = "pnpm run build";
-        # Maybe not the entire repository needs to copied over.
-        installPhase = "mkdir $out; cp --recursive * $out";
+        installPhase = ''
+          pnpm install
+          mkdir $out; cp --recursive * $out
+        '';
       };
 
       devShells.${system}.default = pkgs.mkShell {
-        packages = project_deps;
-        shellHook = "pnpm --version";
+        packages = node_deps ++ [ self.outputs.packages.${system}.default ];
+        pnpmDeps = pnpm_deps;
       };
 
       apps.${system}.default = {
