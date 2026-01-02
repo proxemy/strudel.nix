@@ -1,6 +1,6 @@
 {
   description = ''
-    A strudel.cc application wrapper for hermenetic
+    A strudel.cc application wrapper for hermetic
     reproduction of tidal cycles music projects.
   '';
 
