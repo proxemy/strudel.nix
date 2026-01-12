@@ -38,7 +38,7 @@
       ];
     in
     {
-      packages.${system}.default = pkgs.stdenv.mkDerivation {
+      packages.${system}.default = pkgs.stdenvNoCC.mkDerivation {
         name = "strudel.nix";
         src = strudel;
         nativeBuildInputs = node_deps;
