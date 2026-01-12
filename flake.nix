@@ -41,12 +41,15 @@
       packages.${system}.default = pkgs.stdenvNoCC.mkDerivation {
         name = "strudel.nix";
         src = strudel;
+        doCheck = false;
         nativeBuildInputs = node_deps;
         pnpmDeps = pnpm_deps;
-        buildPhase = "pnpm run build";
-        installPhase = ''
+        buildPhase = ''
           pnpm install
-          mkdir $out; cp --recursive * $out
+          pnpm run build
+        '';
+        installPhase = ''
+          mkdir $out
         '';
       };
 
