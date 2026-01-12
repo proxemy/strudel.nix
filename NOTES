@@ -1,0 +1,5 @@
+* ´package.json´ has a ´scripts.prestart´ target that runs ´jsdoc´ (doc creation?)
+  at runtime which requires a mutable runtime environment.
+* The launch target ´astro dev´ (implied by ´npm start´) wants to write
+  "injected types" into ´website/.astro/types.d.ts´ which requires a mutable runtime env.
+  There is no content written to ´website/.astro/types.d´ at launch anyway.
