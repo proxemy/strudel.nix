@@ -1,8 +1,5 @@
 {
-  description = ''
-    A strudel.cc application wrapper for hermetic
-    reproduction of tidal cycles music projects.
-  '';
+  description = "A strudel.cc application wrapper.";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
