@@ -41,7 +41,6 @@
       packages.${system}.default = pkgs.stdenvNoCC.mkDerivation {
         name = "strudel.nix";
         src = strudel;
-        doCheck = false;
         nativeBuildInputs = node_deps;
         pnpmDeps = pnpm_deps;
         buildPhase = ''
@@ -50,6 +49,16 @@
         '';
         installPhase = ''
           mkdir $out
+          cp --recursive * $out
+
+          # Disable the 'prestart' script, since is launches 'jsdoc', which
+          # requires mutable runtime access but is implied in 'build' anyway.
+          # Replace the 'start' script with 'preview'.
+          # 'start' launches 'astro dev' wich also requires mutable access.
+          ${pkgs.jq}/bin/jq '
+            .scripts.prestart = "" |
+            .scripts.start = "pnpm preview"
+          ' package.json > $out/package.json
         '';
       };
 
