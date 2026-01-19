@@ -44,19 +44,23 @@
           pnpm install
           pnpm run build
         '';
-        installPhase = ''
-          mkdir $out
-          cp --recursive * $out
+        installPhase =
+          let
+            targets = "{node_modules,website,packages,tools,examples}";
+          in
+          ''
+            mkdir --parent $out/${targets}
+            cp --recursive ${targets} $out
 
-          # Disable the 'prestart' script, since is launches 'jsdoc', which
-          # requires mutable runtime access but is implied in 'build' anyway.
-          # Replace the 'start' script with 'preview'.
-          # 'start' launches 'astro dev' wich also requires mutable access.
-          ${pkgs.jq}/bin/jq '
-            .scripts.prestart = "" |
-            .scripts.start = "pnpm preview"
-          ' package.json > $out/package.json
-        '';
+            # Disable the 'prestart' script, since it launches 'jsdoc', which
+            # requires mutable runtime access but is implied in 'build' anyway.
+            # Replace the 'start' script with 'preview'.
+            # 'start' launches 'astro dev' wich also requires mutable access.
+            ${pkgs.jq}/bin/jq '
+              .scripts.prestart = "" |
+              .scripts.start = "pnpm preview"
+            ' package.json > $out/package.json
+          '';
       };
 
       devShells.${system}.default = pkgs.mkShell {
