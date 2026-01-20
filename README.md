@@ -14,6 +14,9 @@ nix-store you cannot work on them, only interact with the project via eg. `pnpm`
 
 `nix run` starts a local `node` server and opens strudel.cc in your browser.
 
+To run strudel.cc from this remote flake, use
+`nix run github:proxemy/strudel.nix`.
+
 # License
 
-AGPLv3, same as upstream strudel.cc, [see LICENSE](https://codeberg.org/uzu/strudel/src/branch/main/LICENSE).
+AGPLv3, same as strudel.cc, [see LICENSE](https://codeberg.org/uzu/strudel/src/branch/main/LICENSE).
