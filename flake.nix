@@ -70,7 +70,7 @@
             runtimeInputs = project_deps ++ [ self ];
             text = ''
               pushd ${self.outputs.packages.${system}.default}
-              pnpm start -- --open
+              pnpm run start -- --open
             '';
           };
         in
