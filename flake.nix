@@ -49,7 +49,7 @@
             targets = "{node_modules,website,packages,tools,examples}";
           in
           ''
-            mkdir --parent $out/${targets}
+            mkdir $out
             cp --recursive ${targets} $out
 
             # Disable the 'prestart' script, since it launches 'jsdoc', which
@@ -65,26 +65,18 @@
 
       apps.${system}.default =
         let
-          launch_wrapper = pkgs.writeShellApplication {
-            name = "strudel_launch_wrapper";
-            runtimeInputs = project_deps;
+          strudel_wrapper = pkgs.writeShellApplication {
+            name = "strudel_wrapper";
+            runtimeInputs = project_deps ++ [ self ];
             text = ''
-              pushd ${self.packages.${system}.default}
-              exec 9< <(pnpm start &)
-              while read -r <&9 node_stdout; do
-                echo "$node_stdout"
-                if [[ "$node_stdout" =~ "://localhost:" ]]; then
-                  url=$(echo "$node_stdout" | grep -oP "http://localhost:\d+")
-                  open "$url"
-                  break
-                fi
-              done
+              pushd ${self.outputs.packages.${system}.default}
+              pnpm start -- --open
             '';
           };
         in
         {
           type = "app";
-          program = "${launch_wrapper}/bin/strudel_launch_wrapper";
+          program = "${strudel_wrapper}/bin/strudel_wrapper";
         };
 
       devShells.${system}.default = pkgs.mkShell {
