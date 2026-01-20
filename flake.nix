@@ -75,6 +75,7 @@
           };
         in
         {
+          meta.description = "Launch and open strudel.cc in your browser.";
           type = "app";
           program = "${strudel_wrapper}/bin/strudel_wrapper";
         };
