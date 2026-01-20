@@ -25,7 +25,7 @@
         pname = "strudel_pnpm_deps";
         src = strudel;
         fetcherVersion = 3;
-        hash = "sha256-v/2txWPJNAAv+cU4E5TnaRwFdoUBaQLMu88FuRlNxO8=";
+        hash = "sha256-UncT0yFpdvajXy/OQHKl8pnQQB8J7VstDjwCuDSCkBA=";
       };
 
       project_deps = with pkgs; [
