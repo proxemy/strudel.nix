@@ -63,14 +63,32 @@
           '';
       };
 
-      devShells.${system}.default = pkgs.mkShell {
-        packages = project_deps ++ [ self.outputs.packages.${system}.default ];
-        pnpmDeps = pnpm_deps;
-      };
+      apps.${system}.default =
+        let
+          launch_wrapper = pkgs.writeShellApplication {
+            name = "strudel_launch_wrapper";
+            runtimeInputs = project_deps;
+            text = ''
+              pushd ${self.packages.${system}.default}
+              exec 9< <(pnpm start &)
+              while read -r <&9 node_stdout; do
+                echo "$node_stdout"
+                if [[ "$node_stdout" =~ "://localhost:" ]]; then
+                  url=$(echo "$node_stdout" | grep -oP "http://localhost:\d+")
+                  open "$url"
+                  break
+                fi
+              done
+            '';
+          };
+        in
+        {
+          type = "app";
+          program = "${launch_wrapper}/bin/strudel_launch_wrapper";
+        };
 
-      apps.${system}.default = {
-        type = "app";
-        program = "pnpm start";
+      devShells.${system}.default = pkgs.mkShell {
+        packages = project_deps;
       };
 
       formatter.${system} = pkgs.nixfmt-rfc-style;
