@@ -55,7 +55,7 @@
             # Disable the 'prestart' script, since it launches 'jsdoc', which
             # requires mutable runtime access but is implied in 'build' anyway.
             # Replace the 'start' script with 'preview'.
-            # 'start' launches 'astro dev' wich also requires mutable access.
+            # 'start' launches 'astro dev' which also requires mutable access.
             ${pkgs.jq}/bin/jq '
               .scripts.prestart = "" |
               .scripts.start = "pnpm preview"
