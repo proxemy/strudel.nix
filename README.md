@@ -2,18 +2,17 @@
 
 A strudel.cc application wrapper in nix.
 
-Work in progress! Currently only runs on x86-64_linux and relies on xdg-open to
-open the website.
+Work in progress! Currently only runs on x86-64_linux.
 
 # Usage
 
-`nix build` builds and bundles the JS dependencies.
+`nix build` builds the project and it's dependencies in the `result` directory.
 
-`nix develop` only loads the project dependendencies like `pnpm` into the
-environment. Since the sources of strudel.cc are stored immutable in the nix-store
-you cannot develop the project itself.
+`nix develop` only loads the project dependendencies like `pnpm` into the local
+environment. Since the sources of strudel.cc are stored immutably in the
+nix-store you cannot work on them, only interact with the project via eg. `pnpm`.
 
-`nix run` starts a local strudel.cc server and opens it in your browser. WIP!
+`nix run` starts a local `node` server and opens strudel.cc in your browser.
 
 # License
 
