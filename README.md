@@ -2,8 +2,6 @@
 
 A strudel.cc application wrapper in nix.
 
-Work in progress! Currently only runs on x86-64_linux.
-
 # Usage
 
 Use `nix run github:proxemy/strudel.nix` to build, launch and open a new
