@@ -18,72 +18,113 @@
       strudel,
     }:
     let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-
-      pnpm_deps = pkgs.fetchPnpmDeps {
-        pname = "strudel_pnpm_deps";
-        src = strudel;
-        fetcherVersion = 3;
-        hash = "sha256-UncT0yFpdvajXy/OQHKl8pnQQB8J7VstDjwCuDSCkBA=";
-      };
-
-      project_deps = with pkgs; [
-        nodejs
-        pnpmConfigHook
-        pnpm
+      supported_systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
       ];
+
+      for_all_systems =
+        output:
+        nixpkgs.lib.genAttrs supported_systems (
+          system:
+          output {
+            inherit system;
+            pkgs = nixpkgs.legacyPackages.${system};
+          }
+        );
     in
     {
-      packages.${system}.default = pkgs.stdenvNoCC.mkDerivation {
-        name = "strudel.nix";
-        src = strudel;
-        nativeBuildInputs = project_deps;
-        pnpmDeps = pnpm_deps;
-        buildPhase = ''
-          pnpm install
-          pnpm run build
-        '';
-        installPhase =
-          let
-            targets = "{node_modules,website,packages,tools,examples}";
-          in
-          ''
-            mkdir $out
-            cp --recursive ${targets} $out
+      inherit self;
 
-            # Disable the 'prestart' script, since it launches 'jsdoc', which
-            # requires mutable runtime access but is implied in 'build' anyway.
-            # Replace the 'start' script with 'preview'.
-            # 'start' launches 'astro dev' which also requires mutable access.
-            ${pkgs.jq}/bin/jq '
-              .scripts.prestart = "" |
-              .scripts.start = "pnpm preview"
-            ' package.json > $out/package.json
-          '';
-      };
-
-      apps.${system}.default =
-        let
-          strudel_wrapper = pkgs.writeShellApplication {
-            name = "strudel_wrapper";
-            runtimeInputs = project_deps ++ [ self ];
-            text = ''
-              pushd ${self.outputs.packages.${system}.default}
-              pnpm run start -- --open
-            '';
-          };
-        in
+      packages = for_all_systems (
+        { pkgs, ... }:
         {
-          meta.description = "Launch and open strudel.cc in your browser.";
-          type = "app";
-          program = "${strudel_wrapper}/bin/strudel_wrapper";
-        };
+          default = pkgs.stdenvNoCC.mkDerivation {
+            name = "strudel.nix";
+            src = strudel;
 
-      devShells.${system}.default = pkgs.mkShell {
-        packages = project_deps;
-      };
+            nativeBuildInputs = with pkgs; [
+              nodejs
+              pnpmConfigHook
+              pnpm
+            ];
 
-      formatter.${system} = pkgs.nixfmt;
+            pnpmDeps = pkgs.fetchPnpmDeps {
+              pname = "strudel_pnpm_deps";
+              src = strudel;
+              fetcherVersion = 3;
+              hash = "sha256-UncT0yFpdvajXy/OQHKl8pnQQB8J7VstDjwCuDSCkBA=";
+            };
+
+            buildPhase = ''
+              pnpm install
+              pnpm run build
+            '';
+
+            installPhase =
+              let
+                targets = "{node_modules,website,packages,tools,examples}";
+              in
+              ''
+                mkdir $out
+                cp --recursive ${targets} $out
+
+                # Disable the 'prestart' script, since it launches 'jsdoc', which
+                # requires mutable runtime access but is implied in 'build' anyway.
+                # Replace the 'start' script with 'preview'.
+                # 'start' launches 'astro dev' which also requires mutable access.
+                ${pkgs.jq}/bin/jq '
+                  .scripts.prestart = "" |
+                  .scripts.start = "pnpm preview"
+                ' package.json > $out/package.json
+              '';
+          };
+        }
+      );
+
+      apps = for_all_systems (
+        { system, pkgs }:
+        {
+          default =
+            let
+              strudel_pkg = self.outputs.packages.${system}.default;
+              strudel_wrapper = pkgs.writeShellApplication {
+                name = "strudel_wrapper";
+                #runtimeInputs = strudel_pkg.nativeBuildInputs;
+                # I dont understand why i have to duplicate the inputs here
+                # even though the nativeBuildInputs list is identical, execution
+                # fails with a 'npm: command not found'. Building relies on and
+                # works with npm too.
+                runtimeInputs = with pkgs; [
+                  nodejs
+                  pnpmConfigHook
+                  pnpm
+                ];
+                text = ''
+                  pushd ${strudel_pkg}
+                  pnpm run start -- --open
+                '';
+              };
+            in
+            {
+              meta.description = "Launches a server and opens strudel.cc in your browser.";
+              type = "app";
+              program = "${strudel_wrapper}/bin/strudel_wrapper";
+            };
+        }
+      );
+
+      devShells = for_all_systems (
+        { system, pkgs }:
+        {
+          default = pkgs.mkShell {
+            inputsFrom = [ self.outputs.packages.${system}.default ];
+          };
+        }
+      );
+
+      formatter = for_all_systems ({ pkgs, ... }: pkgs.nixfmt);
     };
 }
