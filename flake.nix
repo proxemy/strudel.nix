@@ -58,10 +58,7 @@
               hash = "sha256-UncT0yFpdvajXy/OQHKl8pnQQB8J7VstDjwCuDSCkBA=";
             };
 
-            buildPhase = ''
-              pnpm install
-              pnpm run build
-            '';
+            buildPhase = "pnpm run build";
 
             installPhase =
               let
