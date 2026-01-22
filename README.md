@@ -1,10 +1,10 @@
 # strudel.nix
 
-A strudel.cc application wrapper in nix.
+A [strudel.cc](https://strudel.cc/) application wrapper in nix.
 
 # Usage
 
-Use `nix run github:proxemy/strudel.nix` to build, launch and open a new
+Use `nix run github:proxemy/strudel.nix` to locally build, launch and open a new
 strudel.cc tab in your browser.
 
 `nix build` builds the project and it's dependencies in the `result` directory.
